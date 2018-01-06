@@ -13,6 +13,7 @@ import (
 type Notice struct {
 	number     int
 	title      string
+	url        string
 	department string
 	regi_date  string
 }
@@ -20,7 +21,8 @@ type Checker struct {
 }
 
 func (checker Checker) check() {
-	req, err := http.NewRequest("GET", "http://www.ajou.ac.kr/new/ajou/notice.jsp", nil)
+	url := "http://www.ajou.ac.kr/new/ajou/notice.jsp"
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		// handle error
 	}
@@ -33,7 +35,7 @@ func (checker Checker) check() {
 	req.Header.Set("Connection", "keep-alive")
 	req.Header.Set("Host", "www.ajou.ac.kr")
 	req.Header.Set("Upgrade-Insecure-Requests", "1")
-	
+
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		// handle error
@@ -45,11 +47,6 @@ func (checker Checker) check() {
 	}
 	doc := goquery.NewDocumentFromNode(root)
 
-	// doc, err := goquery.NewDocument("http://www.ajou.ac.kr/new/ajou/notice.jsp")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
 	doc.Find("tbody").Each(func(_ int, s *goquery.Selection) {
 		s.Find("tr").Each(func(_ int, s *goquery.Selection) {
 			notice := Notice{}
@@ -59,6 +56,8 @@ func (checker Checker) check() {
 					notice.number, err = strconv.Atoi(td.Text())
 				case i == 2:
 					notice.title = strings.Trim(td.Find("a").Text(), " \n	")
+					notice.url, _ = td.Find("a").Attr("href")
+					notice.url = url + notice.url
 					// notice.title = td.Nodes
 				case i == 3:
 					notice.department = td.Text()
