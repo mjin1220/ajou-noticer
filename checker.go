@@ -3,25 +3,18 @@ package main
 import (
 	"fmt"
 	"log"
+	"strconv"
+	"strings"
 
 	"github.com/PuerkitoBio/goquery"
 )
 
-const html = `
-<div class="container">
-    <div class="row">
-      <div class="col-lg-8">
-        <p align="justify"><b>Name</b>Priyaka</p>
-        <p align="justify"><b>Surname</b>Patil</p>
-        <p align="justify"><b>Adress</b><br>India,Kolhapur</p>
-        <p align="justify"><b>Hobbies&nbsp;</b><br>Playing</p>
-        <p align="justify"><b>Eduction</b><br>12th</p>
-        <p align="justify"><b>School</b><br>New Highschool</p>
-       </div>
-    </div>
-</div>
-`
-
+type Notice struct {
+	number     int
+	title      string
+	department string
+	regi_date  string
+}
 type Checker struct {
 }
 
@@ -31,11 +24,29 @@ func (checker Checker) check() {
 		log.Fatal(err)
 	}
 
-	// Find the review items
-	doc.Find("tbody").Each(func(i int, s *goquery.Selection) {
-		// For each item found, get the band and title
-		band := s.Find("a").Text()
-		title := s.Find("i").Text()
-		fmt.Printf("Notice %d: %s - %s\n", i, band, title)
+	doc.Find("tbody").Each(func(_ int, s *goquery.Selection) {
+		s.Find("tr").Each(func(_ int, s *goquery.Selection) {
+			notice := Notice{}
+			s.Find("td").Each(func(i int, td *goquery.Selection) {
+				switch {
+				case i == 0:
+					notice.number, err = strconv.Atoi(td.Text())
+				case i == 2:
+					notice.title = strings.Trim(td.Find("a").Text(), " \n	")
+					// notice.title = td.Nodes
+				case i == 3:
+					notice.department = td.Text()
+				case i == 4:
+					notice.regi_date = td.Text()
+				}
+
+				//notice := Notice{}
+
+				//fmt.Printf("Notice %d: %s - %s\n", i, band, title)
+			})
+			fmt.Println(notice)
+			fmt.Println("-------------------------------------------------")
+		})
+
 	})
 }
