@@ -30,5 +30,6 @@ func init() {
 func main() {
 	checker := Checker{}
 
-	checker.check()
+	// checker.check()
+	checker.sendMessage(checker.makeMessage())
 }

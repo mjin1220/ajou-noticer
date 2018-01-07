@@ -1,7 +1,10 @@
 package main
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"strconv"
 	"strings"
@@ -17,9 +20,46 @@ type Notice struct {
 	department string
 	regi_date  string
 }
-
 type Checker struct {
 	notice Notice
+}
+
+type SendMessage struct {
+	Messages []Message `json:"messages"`
+}
+type Message struct {
+	Attachment Attachment `json:"attachment"`
+}
+type Attachment struct {
+	Type    string  `json:"type"`
+	Payload Payload `json:"payload"`
+}
+type Payload struct {
+	TemplateType string    `json:"template_type"`
+	Elements     []Element `json:"elements"`
+}
+type Element struct {
+	Title    string   `json:"title"`
+	Subtitle string   `json:"subtitle"`
+	Buttons  []Button `json:"buttons"`
+}
+type Button struct {
+	Type  string `json:"type"`
+	URL   string `json:"url"`
+	Title string `json:"title"`
+}
+
+type MessageCreativeId struct {
+	ID string `json:"message_creative_id"`
+}
+
+type sendJSON struct {
+	MessageCreativeId string `json:"message_creative_id"`
+	NotificationType  string `json:"notification_type"`
+}
+
+type BroadcastId struct {
+	ID string `json:"broadcast_id"`
 }
 
 func (checker Checker) check() {
@@ -72,38 +112,76 @@ func (checker Checker) check() {
 	})
 }
 
-// func (checker Checker) makeMessage(notice Notice) {
-// 	file, e := ioutil.ReadFile("./config.json")
-// 	if e != nil {
-// 		fmt.Printf("File error: %v\n", e)
-// 		os.Exit(1)
-// 	}
+func (checker Checker) makeMessage() (message_creative_id string) {
+	buttons := []Button{{"web_url", "http://www.ajou.ac.kr/new/ajou/notice.jsp?mode=view&article_no=171773&board_wrapper=%2Fnew%2Fajou%2Fnotice.jsp&pager.offset=0&board_no=33", "자세히 보기"}}
+	elements := []Element{{"AJOU-CSR 동계 통계워크샵 및 논문특강(논문특강 강의실 변경)", "사회과학대학교학팀", buttons}}
+	payload := Payload{"generic", elements}
+	attachment := Attachment{"template", payload}
+	messages := []Message{{attachment}}
+	sendMessage := SendMessage{messages}
 
-// 	person := Person{"Alex", 10}
-// 	pbytes, _ := json.Marshal(person)
-// 	buff := bytes.NewBuffer(pbytes)
+	smbytes, _ := json.Marshal(sendMessage)
+	buff := bytes.NewBuffer(smbytes)
 
-// 	// Request 객체 생성
-// 	req, err := http.NewRequest("POST", "https://graph.facebook.com/v2.11/me/message_creatives?access_token=", buff)
-// 	if err != nil {
-// 		panic(err)
-// 	}
+	// Request 객체 생성
+	req, err := http.NewRequest("POST", "https://graph.facebook.com/v2.11/me/message_creatives?access_token="+config.FacebookToken, buff)
+	if err != nil {
+		panic(err)
+	}
 
-// 	//Content-Type 헤더 추가
-// 	req.Header.Add("Content-Type", "application/xml")
+	//Content-Type 헤더 추가
+	req.Header.Add("Content-Type", "application/json")
 
-// 	// Client객체에서 Request 실행
-// 	client := &http.Client{}
-// 	resp, err := client.Do(req)
-// 	if err != nil {
-// 		panic(err)
-// 	}
-// 	defer resp.Body.Close()
+	// Client객체에서 Request 실행
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
 
-// 	// Response 체크.
-// 	respBody, err := ioutil.ReadAll(resp.Body)
-// 	if err == nil {
-// 		str := string(respBody)
-// 		println(str)
-// 	}
-// }
+	// Response 체크.
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err == nil {
+		mci := MessageCreativeId{}
+		json.Unmarshal(respBody, &mci)
+		message_creative_id = mci.ID
+		fmt.Println("\nCreate Message Success!!\n", string(respBody), "\n")
+		return
+	}
+	return
+}
+
+func (checker Checker) sendMessage(message_creative_id string) (broadcast_id string) {
+	sendJson := sendJSON{message_creative_id, "REGULAR"}
+	smbytes, _ := json.Marshal(sendJson)
+	buff := bytes.NewBuffer(smbytes)
+
+	// Request 객체 생성
+	req, err := http.NewRequest("POST", "https://graph.facebook.com/v2.11/me/broadcast_messages?access_token="+config.FacebookToken, buff)
+	if err != nil {
+		panic(err)
+	}
+
+	//Content-Type 헤더 추가
+	req.Header.Add("Content-Type", "application/json")
+
+	// Client객체에서 Request 실행
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	// Response 체크.
+	respBody, err := ioutil.ReadAll(resp.Body)
+	if err == nil {
+		bi := BroadcastId{}
+		json.Unmarshal(respBody, &bi)
+		broadcast_id = bi.ID
+		fmt.Println("\nSend Message Success!!\n", string(respBody), "\n")
+		return
+	}
+	return
+}
