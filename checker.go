@@ -17,6 +17,7 @@ type Notice struct {
 	department string
 	regi_date  string
 }
+
 type Checker struct {
 	notice Notice
 }
@@ -27,8 +28,7 @@ func (checker Checker) check() {
 	if err != nil {
 		// handle error
 	}
-	cookie := "PHAROS_VISITOR=00002af201605039a00f6b26ca1e0013; _ga=GA1.3.1203974661.1513176736; JSESSIONID=Px3VJH1FiYF9gdrrrGSxksBR4g2Ty1hasNtOaxuQuSS3fNkkMEPj4QF2eJiVyrDQ.toegye_servlet_Portal01; ssotoken=Wruzl4OKYt9gH%2Bo9QdZbzfCPugARo68W0Jf31d%2BG7E2P7JdtwWsBQEF4AoV%2BEfeTutffqOt7APEwP7TnmD%2BdNu%2BM4lHv0fW4wsG8Loa%2FSlwSzoONlqPMRnJj7xruAta1zPC9VSFF6k1PQJLIcVpGkA%3D%3D; SSOGlobalLogouturl=get^http://portal2.ajou.ac.kr/com/sso/logout.jsp$; JSESSIONID=dkbFbmytCDJxGyHmHsdYSS0bAMxhaP8bs2X1wkOiKnHL9816M1mrFPaL7P0Y1IWK.junggak_servlet_engine2"
-	req.Header.Set("Cookie", cookie)
+	req.Header.Set("Cookie", config.PortalCookie)
 	req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8")
 	req.Header.Set("Accept-Encoding", "gzip, deflate")
 	req.Header.Set("Accept-Language", "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7")
@@ -71,3 +71,39 @@ func (checker Checker) check() {
 
 	})
 }
+
+// func (checker Checker) makeMessage(notice Notice) {
+// 	file, e := ioutil.ReadFile("./config.json")
+// 	if e != nil {
+// 		fmt.Printf("File error: %v\n", e)
+// 		os.Exit(1)
+// 	}
+
+// 	person := Person{"Alex", 10}
+// 	pbytes, _ := json.Marshal(person)
+// 	buff := bytes.NewBuffer(pbytes)
+
+// 	// Request 객체 생성
+// 	req, err := http.NewRequest("POST", "https://graph.facebook.com/v2.11/me/message_creatives?access_token=", buff)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+
+// 	//Content-Type 헤더 추가
+// 	req.Header.Add("Content-Type", "application/xml")
+
+// 	// Client객체에서 Request 실행
+// 	client := &http.Client{}
+// 	resp, err := client.Do(req)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	defer resp.Body.Close()
+
+// 	// Response 체크.
+// 	respBody, err := ioutil.ReadAll(resp.Body)
+// 	if err == nil {
+// 		str := string(respBody)
+// 		println(str)
+// 	}
+// }
