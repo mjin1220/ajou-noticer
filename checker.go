@@ -18,6 +18,7 @@ type Notice struct {
 	regi_date  string
 }
 type Checker struct {
+	notice Notice
 }
 
 func (checker Checker) check() {
@@ -49,27 +50,22 @@ func (checker Checker) check() {
 
 	doc.Find("tbody").Each(func(_ int, s *goquery.Selection) {
 		s.Find("tr").Each(func(_ int, s *goquery.Selection) {
-			notice := Notice{}
 			s.Find("td").Each(func(i int, td *goquery.Selection) {
 				switch {
 				case i == 0:
-					notice.number, err = strconv.Atoi(td.Text())
+					checker.notice.number, err = strconv.Atoi(td.Text())
 				case i == 2:
-					notice.title = strings.Trim(td.Find("a").Text(), " \n	")
-					notice.url, _ = td.Find("a").Attr("href")
-					notice.url = url + notice.url
+					checker.notice.title = strings.Trim(td.Find("a").Text(), " \n	")
+					checker.notice.url, _ = td.Find("a").Attr("href")
+					checker.notice.url = url + checker.notice.url
 					// notice.title = td.Nodes
 				case i == 3:
-					notice.department = td.Text()
+					checker.notice.department = td.Text()
 				case i == 4:
-					notice.regi_date = td.Text()
+					checker.notice.regi_date = td.Text()
 				}
-
-				//notice := Notice{}
-
-				//fmt.Printf("Notice %d: %s - %s\n", i, band, title)
 			})
-			fmt.Println(notice)
+			fmt.Println(checker.notice)
 			fmt.Println("-------------------------------------------------")
 		})
 
