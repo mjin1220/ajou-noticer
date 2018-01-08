@@ -5,6 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"os/signal"
+	"syscall"
+	"time"
 )
 
 type Config struct {
@@ -28,8 +31,18 @@ func init() {
 }
 
 func main() {
-	checker := Checker{}
+	c := make(chan os.Signal, 2)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	go func() {
+		<-c
+		fmt.Println("[ajou-noticer] ajou-noticer off")
+		os.Exit(1)
+	}()
 
-	// checker.check()
-	checker.sendMessage(checker.makeMessage())
+	checker := Checker{}
+	fmt.Println("[ajou-noticer] ajou-noticer on")
+	for {
+		checker.check()
+		time.Sleep(5 * time.Minute)
+	}
 }
