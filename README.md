@@ -1,5 +1,6 @@
 # 아주대학교 공지알리미
 [![Build Status](https://travis-ci.org/mjin1220/ajou-noticer.svg?branch=master)](https://travis-ci.org/mjin1220/ajou-noticer)
+[![Go Report Card](https://goreportcard.com/badge/github.com/mjin1220/ajou-noticer)](https://goreportcard.com/report/github.com/mjin1220/ajou-noticer)
 
 서비스를 제공받기 위해서, 아주대학교 공지봇 페이지에서 좋아요 버튼을 눌러야합니다.
 > 페이스북 채팅봇이 제공하는 아주대학교 공지알림 서비스

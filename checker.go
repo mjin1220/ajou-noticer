@@ -29,6 +29,7 @@ type Notice struct {
 	RegiDate   string
 }
 
+// check 함수는 해당 url에서 공지사항을 검사하는 함수
 func (checker *Checker) check() {
 	url := "http://www.ajou.ac.kr/new/ajou/notice.jsp"
 	req, err := http.NewRequest("GET", url, nil)
@@ -77,13 +78,14 @@ func (checker *Checker) check() {
 
 	diffNotices := checker.diff()
 	if len(diffNotices) != 0 {
-		new(Noticer).Notify(diffNotices)
+		new(Noticer).notify(diffNotices)
 	}
 	checker.OldNotices = checker.NewNotices
 	checker.NewNotices = Notices{}
 	return
 }
 
+// diff 함수는 checker가 가지고 있는 OldNotices와 NewNotices를 비교해서 추가된 부분을 반환하는 함수
 func (checker Checker) diff() (diffNotices Notices) {
 	for i := 0; i < len(checker.NewNotices); i++ {
 		if checker.OldNotices.contain(checker.NewNotices[i]) == false {
@@ -93,6 +95,7 @@ func (checker Checker) diff() (diffNotices Notices) {
 	return
 }
 
+// contain 함수는 Notices 내에 매개변수로 받은 Notice가 있는지 없는지 확인하는 함수
 func (notices Notices) contain(notice Notice) (ret bool) {
 	for i := 0; i < len(notices); i++ {
 		if (notice.Number == notices[i].Number) && (notice.Title == notices[i].Title) {
