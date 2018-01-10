@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -68,11 +69,11 @@ func (checker *Checker) check() {
 		checker.NewNotices = append(checker.NewNotices, tempNotice)
 	})
 
-	// if checker.OldNotices == nil { // in first check
-	// 	checker.OldNotices = checker.NewNotices
-	// 	fmt.Println("[ajou-noticer] first start")
-	// 	return
-	// }
+	if checker.OldNotices == nil { // in first check
+		checker.OldNotices = checker.NewNotices
+		fmt.Println("[ajou-noticer] first start")
+		return
+	}
 
 	diffNotices := checker.diff()
 	if len(diffNotices) != 0 {
