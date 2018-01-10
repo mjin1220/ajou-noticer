@@ -68,27 +68,6 @@ func (checker *Checker) check() {
 		checker.NewNotices = append(checker.NewNotices, tempNotice)
 	})
 
-	// doc.Find("tbody").Each(func(_ int, s *goquery.Selection) {
-	// 	s.Find("tr").Each(func(index int, s *goquery.Selection) {
-	// 		tempNotice := Notice{}
-	// 		s.Find("td").Each(func(i int, td *goquery.Selection) {
-	// 			switch {
-	// 			case i == 0:
-	// 				tempNotice.Number, err = strconv.Atoi(td.Text())
-	// 			case i == 2:
-	// 				tempNotice.Title = strings.Trim(td.Find("a").Text(), " \n	")
-	// 				tempNotice.URL, _ = td.Find("a").Attr("href")
-	// 				tempNotice.URL = url + tempNotice.URL
-	// 			case i == 3:
-	// 				tempNotice.Department = td.Text()
-	// 			case i == 4:
-	// 				tempNotice.RegiDate = td.Text()
-	// 			}
-	// 		})
-	// 		checker.NewNotices = append(checker.NewNotices, tempNotice)
-	// 	})
-	// })
-
 	// if checker.OldNotices == nil { // in first check
 	// 	checker.OldNotices = checker.NewNotices
 	// 	fmt.Println("[ajou-noticer] first start")
