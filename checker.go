@@ -11,55 +11,22 @@ import (
 	"golang.org/x/net/html"
 )
 
+// Checker 타입은 공지사항 슬라이스들을 가짐
 type Checker struct {
 	OldNotices Notices
 	NewNotices Notices
 }
 
+// Notices 타입은 Notice 타입의 슬라이스
 type Notices []Notice
+
+// Notice 타입은 공지사항의 항목들을 가지는 구조체 변수
 type Notice struct {
 	Number     int
 	Title      string
 	URL        string
 	Department string
 	RegiDate   string
-}
-
-type SendMessage struct {
-	Messages []Message `json:"messages"`
-}
-type Message struct {
-	Attachment Attachment `json:"attachment"`
-}
-type Attachment struct {
-	Type    string  `json:"type"`
-	Payload Payload `json:"payload"`
-}
-type Payload struct {
-	TemplateType string    `json:"template_type"`
-	Elements     []Element `json:"elements"`
-}
-type Element struct {
-	Title    string   `json:"title"`
-	Subtitle string   `json:"subtitle"`
-	Buttons  []Button `json:"buttons"`
-}
-type Button struct {
-	Type  string `json:"type"`
-	URL   string `json:"url"`
-	Title string `json:"title"`
-}
-
-type MessageCreativeID struct {
-	ID string `json:"message_creative_id"`
-}
-type BroadcastID struct {
-	ID string `json:"broadcast_id"`
-}
-
-type sendJSON struct {
-	MessageCreativeID string `json:"message_creative_id"`
-	NotificationType  string `json:"notification_type"`
 }
 
 func (checker *Checker) check() {
