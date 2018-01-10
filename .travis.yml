@@ -1,0 +1,7 @@
+language: go
+os:
+  - windows
+go:
+  - tip
+script:
+ - go build
