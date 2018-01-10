@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -55,31 +54,46 @@ func (checker *Checker) check() {
 	}
 	doc := goquery.NewDocumentFromNode(root)
 
-	doc.Find("tbody").Each(func(_ int, s *goquery.Selection) {
-		s.Find("tr").Each(func(index int, s *goquery.Selection) {
-			tempNotice := Notice{}
-			s.Find("td").Each(func(i int, td *goquery.Selection) {
-				switch {
-				case i == 0:
-					tempNotice.Number, err = strconv.Atoi(td.Text())
-				case i == 2:
-					tempNotice.Title = strings.Trim(td.Find("a").Text(), " \n	")
-					tempNotice.URL, _ = td.Find("a").Attr("href")
-					tempNotice.URL = url + tempNotice.URL
-				case i == 3:
-					tempNotice.Department = td.Text()
-				case i == 4:
-					tempNotice.RegiDate = td.Text()
-				}
-			})
-			checker.NewNotices = append(checker.NewNotices, tempNotice)
-		})
+	q := `#jwxe_main_content > div > div.list_wrap > table > tbody > tr`
+	doc.Find(q).Each(func(i int, s *goquery.Selection) {
+		tempNotice := Notice{}
+
+		tempNotice.Number, _ = strconv.Atoi(strings.TrimSpace(s.Find(`td:nth-child(1)`).Text()))
+		tempNotice.Title = strings.TrimSpace(s.Find(`td:nth-child(3) > a`).Text())
+		tempNotice.URL, _ = s.Find(`td:nth-child(3) > a`).Attr("href")
+		tempNotice.URL = url + tempNotice.URL
+		tempNotice.Department = strings.TrimSpace(s.Find(`td:nth-child(4)`).Text())
+		tempNotice.RegiDate = strings.TrimSpace(s.Find(`td:nth-child(5)`).Text())
+
+		checker.NewNotices = append(checker.NewNotices, tempNotice)
 	})
-	if checker.OldNotices == nil { // in first check
-		checker.OldNotices = checker.NewNotices
-		fmt.Println("[ajou-noticer] first start")
-		return
-	}
+
+	// doc.Find("tbody").Each(func(_ int, s *goquery.Selection) {
+	// 	s.Find("tr").Each(func(index int, s *goquery.Selection) {
+	// 		tempNotice := Notice{}
+	// 		s.Find("td").Each(func(i int, td *goquery.Selection) {
+	// 			switch {
+	// 			case i == 0:
+	// 				tempNotice.Number, err = strconv.Atoi(td.Text())
+	// 			case i == 2:
+	// 				tempNotice.Title = strings.Trim(td.Find("a").Text(), " \n	")
+	// 				tempNotice.URL, _ = td.Find("a").Attr("href")
+	// 				tempNotice.URL = url + tempNotice.URL
+	// 			case i == 3:
+	// 				tempNotice.Department = td.Text()
+	// 			case i == 4:
+	// 				tempNotice.RegiDate = td.Text()
+	// 			}
+	// 		})
+	// 		checker.NewNotices = append(checker.NewNotices, tempNotice)
+	// 	})
+	// })
+
+	// if checker.OldNotices == nil { // in first check
+	// 	checker.OldNotices = checker.NewNotices
+	// 	fmt.Println("[ajou-noticer] first start")
+	// 	return
+	// }
 
 	diffNotices := checker.diff()
 	if len(diffNotices) != 0 {
