@@ -62,7 +62,7 @@ type sendJSON struct {
 	NotificationType  string `json:"notification_type"`
 }
 
-func (checker Checker) check() {
+func (checker *Checker) check() {
 	url := "http://www.ajou.ac.kr/new/ajou/notice.jsp"
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
@@ -118,7 +118,8 @@ func (checker Checker) check() {
 	if len(diffNotices) != 0 {
 		new(Noticer).Notify(diffNotices)
 	}
-
+	checker.OldNotices = checker.NewNotices
+	checker.NewNotices = Notices{}
 	return
 }
 
