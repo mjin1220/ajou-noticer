@@ -9,6 +9,7 @@
 > * 언어: Go
 > * 개발기간: 2018-01-06 - 01-08
 > * URL: https://www.facebook.com/ajounoticer/
+> * URL: https://ajou-noticer.tk
 
 # AJOU-Noticer
 In order to receive the service, you must press the Like button on the AJOU-Noticer bot page.
@@ -17,4 +18,5 @@ In order to receive the service, you must press the Like button on the AJOU-Noti
 > * Language: Go
 > * Development Period: 2018-01-06 - 01-08
 > * URL: https://www.facebook.com/ajounoticer/
+> * URL: https://ajou-noticer.tk
 
