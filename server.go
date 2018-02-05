@@ -113,7 +113,7 @@ func logRequest(r *http.Request) {
 		if err != nil {
 			return
 		}
-		if _, err = fd.WriteString(string(body)); err != nil {
+		if _, err = fd.WriteString(string(body) + "\n"); err != nil {
 			log.Fatal(err)
 			return
 		}
