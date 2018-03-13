@@ -25,7 +25,9 @@ func init() {
 	file, e := ioutil.ReadFile("./config.json")
 	if e != nil {
 		fmt.Printf("File error: %v\n", e)
-		os.Exit(1)
+		config.FacebookToken = ""
+		config.PortalCookie = ""
+		return
 	}
 	err := json.Unmarshal(file, &config)
 	if err != nil {
